@@ -4,6 +4,8 @@
 package co.escapeideas.atlassian.bamboo.reports;
 
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * @author tmullender
@@ -24,8 +26,8 @@ public class Build {
 		this.artifacts = artifacts;
 	}
 
-	public Map<String, String> getArtifacts() {
-		return artifacts;
+	public Set<Entry<String,String>> getArtifacts() {
+		return artifacts.entrySet();
 	}
 
 	public String getStatus() {

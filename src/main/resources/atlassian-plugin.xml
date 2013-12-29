@@ -7,13 +7,15 @@
         <param name="plugin-logo">images/pluginLogo.png</param>
     </plugin-info>
 
-    <xhtml-macro name="Bamboo Artifact Links" class="co.escapeideas.atlassian.bamboo.reports.ArtifactLinks" key="bamboo-artifact-links">
+    <xhtml-macro name="bamboo artifact links" class="co.escapeideas.atlassian.bamboo.reports.ArtifactLinks" key="bamboo-artifact-links">
         <parameters>
-            <parameter name="url" type="string">
-                <option key="showValueInPlaceholder" value="true" />
-            </parameter> 
+            <parameter name="ServerURL" type="string"></parameter>
+            <parameter name="Project" type="string"></parameter>
+            <parameter name="Plan" type="string"></parameter>
+            <parameter name="Job" type="string"></parameter>
+            <parameter name="Count" type="string"></parameter>
         </parameters>
-        <description>Inserts a table of links to Bamboo Artifacts</description>
+        <description>Inserts a table of links to Bamboo artifacts</description>
     </xhtml-macro>
 
     <!-- add our i18n resource -->
@@ -24,10 +26,15 @@
         <dependency>com.atlassian.auiplugin:ajs</dependency>
         
         <resource type="download" name="bamboo-reports.css" location="/css/bamboo-reports.css"/>
-        <resource type="download" name="bamboo-reports.js" location="/js/bamboo-reports.js"/>
         <resource type="download" name="images/" location="/images"/>
 
         <context>bamboo-reports</context>
+    </web-resource>
+    
+    <web-resource name="bamboo-reports Editor resources" key="bamboo-reports-editor-resources">
+        <resource type="download" name="bamboo-reports.js" location="/js/bamboo-reports.js"/>
+        <context>editor</context>
+        <dependency>com.atlassian.confluence.tinymceplugin:editor-resources</dependency>
     </web-resource>
    
     <!-- import from the product container -->

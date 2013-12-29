@@ -1,0 +1,11 @@
+<table id="artifact-links" >
+#foreach( $build in $builds )
+    <tr>
+        <td>$build.ID</td>
+        <td>$build.Status</td>
+#foreach( $artifact in $build.Artifacts )
+        <td><a href="$artifact.Value" >$artifact.Key</a></td>
+#end
+    </tr>
+#end
+</table>

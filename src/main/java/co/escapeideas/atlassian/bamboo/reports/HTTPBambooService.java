@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.wink.client.ClientResponse;
 import org.apache.wink.client.Resource;
 import org.apache.wink.client.RestClient;
 
@@ -22,7 +24,6 @@ import com.google.gson.JsonParser;
 public class HTTPBambooService implements BambooService {
 	
 	private final RestClient httpClient;
-	
 	private final JsonParser parser;
 
 	/**
@@ -39,10 +40,27 @@ public class HTTPBambooService implements BambooService {
 	@Override
 	public List<Build> getArtifacts(String url) {
 		final Resource resource = httpClient.resource(url);
-		final String response = resource.get(String.class);
-		System.out.println(response);
-		final JsonElement element = parser.parse(response);
-		return toList(element);
+		final ClientResponse response = resource.get();
+		final List<Build> builds;
+		if (isSuccessful(response)){
+			final JsonElement element = parser.parse(response.getEntity(String.class));
+			builds = toList(element);
+		} else {
+			builds = getErrorList(response, url);
+		}
+		return builds;
+	}
+
+	private List<Build> getErrorList(ClientResponse response, String url) {
+		final ArrayList<Build> list = new ArrayList<Build>();
+		final Map<String, String> artifacts = new HashMap<String, String>();
+		artifacts.put("ERROR", url);
+		list.add(new Build(response.getMessage(), response.getStatusCode(), artifacts ));
+		return list;
+	}
+
+	private boolean isSuccessful(ClientResponse response) {
+		return response != null && HttpStatus.SC_OK == response.getStatusCode();
 	}
 
 	/**

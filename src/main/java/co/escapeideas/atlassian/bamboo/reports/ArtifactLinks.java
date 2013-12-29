@@ -7,14 +7,15 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.apache.velocity.VelocityContext;
 import org.apache.wink.client.RestClient;
 
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
 import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
-import com.atlassian.renderer.v2.components.HtmlEscaper;
+import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
+import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.google.gson.JsonParser;
 
 /**
@@ -42,14 +43,16 @@ public class ArtifactLinks implements Macro {
 	@Override
 	public String execute(Map<String, String> parameters, String body, ConversionContext context) throws MacroExecutionException {
 		final ArtifactLinksConfiguration config = new ArtifactLinksConfiguration(parameters);
+		final VelocityContext velocityContext = new VelocityContext(MacroUtils.defaultVelocityContext());
 		final String url = config.getUrl();
-		final List<Build> artifacts;
+		final List<Build> builds;
 		if (isValid(url)){
-			artifacts = bambooService.getArtifacts(url);
+			builds = bambooService.getArtifacts(url);
 		} else {
-			artifacts = new ArrayList<Build>();
+			builds = new ArrayList<Build>();
 		}
-		return renderTable(artifacts);
+		velocityContext.put("builds", builds);
+		return VelocityUtils.getRenderedTemplate("artifact-links.vm", velocityContext);
 	}
 
 	private boolean isValid(String url) {
@@ -60,34 +63,6 @@ public class ArtifactLinks implements Macro {
 
 		}
 		return false;
-	}
-
-	private String renderTable(List<Build> builds) {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("<table id=\"artifact-links\" >");
-		for (final Build build : builds){
-			builder.append(renderRow(build));
-		}
-		builder.append("</table>");
-		return builder.toString();
-	}
-
-	private String renderRow(Build build) {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("<tr><td>");
-		builder.append(build.getID());
-		builder.append("</td><td>");
-		builder.append(build.getStatus());
-		builder.append("</td>");
-		for (Entry<String, String> artifact : build.getArtifacts().entrySet()){
-			builder.append("<td><a href=\"");
-			builder.append(HtmlEscaper.escapeAll(artifact.getValue(), false));
-			builder.append("\" >");
-			builder.append(HtmlEscaper.escapeAll(artifact.getKey(), false));
-			builder.append("</a></td>");
-		}
-		builder.append("</tr>");
-		return builder.toString();
 	}
 
 	/* (non-Javadoc)

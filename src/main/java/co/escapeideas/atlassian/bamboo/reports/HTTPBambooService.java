@@ -13,10 +13,6 @@ import org.apache.wink.client.ClientResponse;
 import org.apache.wink.client.Resource;
 import org.apache.wink.client.RestClient;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 /**
  * @author tmullender
  *
@@ -24,12 +20,12 @@ import com.google.gson.JsonParser;
 public class HTTPBambooService implements BambooService {
 	
 	private final RestClient httpClient;
-	private final JsonParser parser;
+	private final JSONParser parser;
 
 	/**
 	 * 
 	 */
-	public HTTPBambooService(RestClient client, JsonParser parser) {
+	public HTTPBambooService(RestClient client, JSONParser parser) {
 		this.httpClient = client;
 		this.parser = parser;
 	}
@@ -43,8 +39,7 @@ public class HTTPBambooService implements BambooService {
 		final ClientResponse response = resource.get();
 		final List<Build> builds;
 		if (isSuccessful(response)){
-			final JsonElement element = parser.parse(response.getEntity(String.class));
-			builds = toList(element);
+			builds = parser.parseBuilds(response.getEntity(String.class));
 		} else {
 			builds = getErrorList(response, url);
 		}
@@ -63,52 +58,5 @@ public class HTTPBambooService implements BambooService {
 		return response != null && HttpStatus.SC_OK == response.getStatusCode();
 	}
 
-	/**
-	 * Converts the response into a list of Builds
-	 * @param response
-	 * @return
-	 */
-	private List<Build> toList(JsonElement response) {
-		final ArrayList<Build> list = new ArrayList<Build>();
-		final JsonElement results = response.getAsJsonObject().get("results");
-		final JsonElement resultArray = results.getAsJsonObject().get("result");
-		for (JsonElement result : resultArray.getAsJsonArray()) {
-			final Build build = toBuild(result);
-			list.add(build);
-		}
-		return list;
-	}
-
-	/**
-	 * Converts the result into a Build
-	 * @param result
-	 * @return
-	 */
-	private Build toBuild(JsonElement result) {
-		final JsonObject resultObject = result.getAsJsonObject();
-		final int id = resultObject.get("buildNumber").getAsInt();
-		final String status = resultObject.get("buildState").getAsString();
-		final Map<String, String> artifactMap = toArtifactMap(resultObject);
-		final Build build = new Build(status, id, artifactMap);
-		return build;
-	}
-
-	/**
-	 * Converts the resultObject into a Map of artifact name to url
-	 * @param resultObject
-	 * @return
-	 */
-	private Map<String, String> toArtifactMap(final JsonObject resultObject) {
-		final Map<String, String> artifactMap = new HashMap<String, String>();
-		final JsonElement artifacts = resultObject.get("artifacts");
-		final JsonElement artifactArray = artifacts.getAsJsonObject().get("artifact");
-		for (JsonElement artifact : artifactArray.getAsJsonArray()){
-			final JsonObject object = artifact.getAsJsonObject();
-			final String name = object.get("name").getAsString();
-			final String url = object.get("link").getAsJsonObject().get("href").getAsString();
-			artifactMap.put(name, url);
-		}
-		return artifactMap;
-	}
 
 }

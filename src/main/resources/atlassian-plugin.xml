@@ -7,13 +7,14 @@
         <param name="plugin-logo">images/pluginLogo.png</param>
     </plugin-info>
 
-    <xhtml-macro name="bamboo artifact links" class="co.escapeideas.atlassian.bamboo.reports.ArtifactLinks" key="bamboo-artifact-links">
+    <xhtml-macro name="bamboo-artifact-links" class="co.escapeideas.atlassian.bamboo.reports.ArtifactLinks" key="bamboo-artifact-links">
         <parameters>
-            <parameter name="ServerURL" type="string"></parameter>
-            <parameter name="Project" type="string"></parameter>
-            <parameter name="Plan" type="string"></parameter>
-            <parameter name="Job" type="string"></parameter>
-            <parameter name="Count" type="string"></parameter>
+            <parameter name="serverurl" type="string" default="http://localhost" ></parameter>
+            <parameter name="project" type="string" default="PROJECT" ></parameter>
+            <parameter name="plan" type="string" default="PLAN" ></parameter>
+            <parameter name="count" type="string" default="1" ></parameter>
+            <parameter name="override" type="boolean" ></parameter>
+            <parameter name="url" type="string" ></parameter>
         </parameters>
         <description>Inserts a table of links to Bamboo artifacts</description>
     </xhtml-macro>
@@ -31,10 +32,10 @@
         <context>bamboo-reports</context>
     </web-resource>
     
-    <web-resource name="bamboo-reports Editor resources" key="bamboo-reports-editor-resources">
+    <web-resource name="bamboo-reports Macro Browser resources" key="bamboo-reports-browser-resources">
         <resource type="download" name="bamboo-reports.js" location="/js/bamboo-reports.js"/>
-        <context>editor</context>
-        <dependency>com.atlassian.confluence.tinymceplugin:editor-resources</dependency>
+        <context>macro-browser</context>
+        <dependency>confluence.editor.actions:editor-macro-browser</dependency>
     </web-resource>
    
     <!-- import from the product container -->

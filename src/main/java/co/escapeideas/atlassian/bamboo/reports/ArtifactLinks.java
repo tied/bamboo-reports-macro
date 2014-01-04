@@ -16,7 +16,6 @@ import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
-import com.google.gson.JsonParser;
 
 /**
  * @author tmullender
@@ -30,7 +29,7 @@ public class ArtifactLinks implements Macro {
 	 * 
 	 */
 	public ArtifactLinks() {
-		this(new HTTPBambooService(new RestClient(), new JsonParser()));
+		this(new HTTPBambooService(new RestClient(), new GsonParser()));
 	}
 	
 	public ArtifactLinks(BambooService service) {
@@ -44,10 +43,9 @@ public class ArtifactLinks implements Macro {
 	public String execute(Map<String, String> parameters, String body, ConversionContext context) throws MacroExecutionException {
 		final ArtifactLinksConfiguration config = new ArtifactLinksConfiguration(parameters);
 		final VelocityContext velocityContext = new VelocityContext(MacroUtils.defaultVelocityContext());
-		final String url = config.getUrl();
 		final List<Build> builds;
-		if (isValid(url)){
-			builds = bambooService.getArtifacts(url);
+		if (isValid(config)){
+			builds = bambooService.getArtifacts(config.getUrl());
 		} else {
 			builds = new ArrayList<Build>();
 		}
@@ -55,12 +53,14 @@ public class ArtifactLinks implements Macro {
 		return VelocityUtils.getRenderedTemplate("artifact-links.vm", velocityContext);
 	}
 
-	private boolean isValid(String url) {
-		try {
-			URI.create(url);
-			return true;
-		} catch (Exception e){
+	private boolean isValid(ArtifactLinksConfiguration config) {
+		if (config.isValid()){
+			try {
+				URI.create(config.getUrl());
+				return true;
+			} catch (Exception e){
 
+			}
 		}
 		return false;
 	}

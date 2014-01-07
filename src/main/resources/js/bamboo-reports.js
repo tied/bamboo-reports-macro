@@ -1,5 +1,3 @@
-jQuery(function ($) {
-	
 	var updateArtifactLinksURL = function(event) {
 		console.log('Updating URL');
 		if ($('#macro-param-override').prop('checked')){
@@ -33,7 +31,3 @@ jQuery(function ($) {
 		console.log('initialised artifact links macro');
     };
 	
-    $(document).ready(function() {
-	    initArtifactsLinkMacro();
-	});
-});

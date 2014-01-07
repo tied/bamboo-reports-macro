@@ -1,10 +1,16 @@
-<table id="artifact-links" >
+#requireResource("co.escapeideas.atlassian.bamboo-reports:bamboo-reports-resources")
+<table class="confluenceTable artifact-links" >
+    <tr class="artifact-links-header" >
+        <th class="artifact-links-build-id" >Build</td>
+        <th class="artifact-links-build-status" >Status</td>
+        <th class="artifact-links-build-link" >Artifacts</td>
+    </tr>  
 #foreach( $build in $builds )
-    <tr>
-        <td>$build.ID</td>
-        <td>$build.Status</td>
+    <tr class="artifact-links-build" >
+        <td class="artifact-links-build-id" >$build.ID</td>
+        <td class="artifact-links-build-status" ><div class="artifact-links-build-status $build.Status" ></div></td>
 #foreach( $artifact in $build.Artifacts )
-        <td><a href="$artifact.Value" >$artifact.Key</a></td>
+        <td class="artifact-links-build-link" ><a href="$artifact.Value" >$artifact.Key</a></td>
 #end
     </tr>
 #end

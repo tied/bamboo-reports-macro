@@ -52,7 +52,7 @@ public class HTTPBambooService implements BambooService {
 		artifacts.put("ERROR", url);
 		list.add(new Build(response.getMessage(), response.getStatusCode(), artifacts ));
 		return list;
-	}
+	}	
 
 	private boolean isSuccessful(ClientResponse response) {
 		return response != null && HttpStatus.SC_OK == response.getStatusCode();

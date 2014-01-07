@@ -56,12 +56,49 @@ public class GsonParser implements JSONParser {
 	private Map<String, String> toArtifactMap(final JsonObject resultObject) {
 		final Map<String, String> artifactMap = new HashMap<String, String>();
 		final JsonElement artifacts = resultObject.get("artifacts");
+		final JsonElement stages = resultObject.get("stages");
 		final JsonElement artifactArray = artifacts.getAsJsonObject().get("artifact");
-		for (JsonElement artifact : artifactArray.getAsJsonArray()){
-			final JsonObject object = artifact.getAsJsonObject();
-			final String name = object.get("name").getAsString();
-			final String url = object.get("link").getAsJsonObject().get("href").getAsString();
-			artifactMap.put(name, url);
+		artifactMap.putAll(toMap(artifactArray));
+		if (stages != null){
+			final JsonElement stageArray = stages.getAsJsonObject().get("stage");
+			artifactMap.putAll(getArtifactsFromStages(stageArray));
+		}
+		return artifactMap;
+	}
+
+	/**
+	 * @param artifactMap
+	 * @param stageArray
+	 * @return 
+	 */
+	private Map<String, String> getArtifactsFromStages(final JsonElement stageArray) {
+		final Map<String, String> artifactMap = new HashMap<String, String>();
+		if (stageArray != null){
+			for (JsonElement stage : stageArray.getAsJsonArray()){
+				final JsonObject object = stage.getAsJsonObject();
+				final List<Build> builds = toList(object);
+				for (Build build : builds){
+					artifactMap.putAll(build.getArtifactMap());
+				}
+			}
+		}
+		return artifactMap;
+	}
+
+	/**
+	 * @param artifactMap
+	 * @param artifactArray
+	 * @return 
+	 */
+	private Map<String, String> toMap(final JsonElement artifactArray) {
+		final Map<String, String> artifactMap = new HashMap<String, String>();
+		if (artifactArray != null){
+			for (JsonElement artifact : artifactArray.getAsJsonArray()){
+				final JsonObject object = artifact.getAsJsonObject();
+				final String name = object.get("name").getAsString();
+				final String url = object.get("link").getAsJsonObject().get("href").getAsString();
+				artifactMap.put(name, url);
+			}
 		}
 		return artifactMap;
 	}

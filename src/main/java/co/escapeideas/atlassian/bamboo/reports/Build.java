@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class Build {
 	
-	private final Map<String, String> artifacts;
+	private final Map<String, String> artifactMap;
 	private final String status;
 	private final int id;
 
@@ -23,11 +23,11 @@ public class Build {
 	public Build(final String status, final int id, final Map<String, String> artifacts) {
 		this.status = status;
 		this.id = id;
-		this.artifacts = artifacts;
+		this.artifactMap = artifacts;
 	}
-
-	public Set<Entry<String,String>> getArtifacts() {
-		return artifacts.entrySet();
+	
+	public Map<String, String> getArtifactMap() {
+		return artifactMap;
 	}
 
 	public String getStatus() {
@@ -38,4 +38,8 @@ public class Build {
 		return id;
 	}
 
+	public Set<Entry<String,String>> getArtifacts() {
+		return artifactMap.entrySet();
+	}
+	
 }

@@ -5,32 +5,13 @@ import java.util.Map;
 public class ArtifactLinksConfiguration {
 
 	private final String serverURL;
-	private final String project;
-	private final String plan;
-	private final String count;
-
+	
 	public ArtifactLinksConfiguration(Map<String, String> parameters) {
-		this.serverURL = parameters.get("serverurl");
-		this.project = parameters.get("project");
-		this.plan = parameters.get("plan");
-		this.count = getCount(parameters.get("count"));
-	}
-
-	private String getCount(String value) {
-		if (value == null){
-			return "0";
-		}
-		try {
-			final Integer count = Integer.valueOf(value);
-			if (count > 0){
-				return String.valueOf(count-1);
-			}
-		} catch (NumberFormatException e){}
-		return "0";
+		this.serverURL = parameters.get("url");
 	}
 
 	public String getUrl() {
-		return serverURL + "/rest/api/latest/result/" + project + "-" + plan + ".json?expand=results[:" + count + "].result.stages.stage.results.result.artifacts";
+		return serverURL;
 	}
 
 	public boolean isValid() {
@@ -39,9 +20,34 @@ public class ArtifactLinksConfiguration {
 
 	@Override
 	public String toString() {
-		return "ArtifactLinksConfiguration [serverURL=" + serverURL
-				+ ", project=" + project + ", plan=" + plan + ", count="
-				+ count + "]";
+		return "ArtifactLinksConfiguration [serverURL=" + serverURL + "]";
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((serverURL == null) ? 0 : serverURL.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ArtifactLinksConfiguration other = (ArtifactLinksConfiguration) obj;
+		if (serverURL == null) {
+			if (other.serverURL != null)
+				return false;
+		} else if (!serverURL.equals(other.serverURL))
+			return false;
+		return true;
+	}
+
 
 }

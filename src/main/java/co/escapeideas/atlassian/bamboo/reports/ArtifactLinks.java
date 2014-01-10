@@ -43,16 +43,38 @@ public class ArtifactLinks implements Macro {
 	public String execute(Map<String, String> parameters, String body, ConversionContext context) throws MacroExecutionException {
 		final ArtifactLinksConfiguration config = new ArtifactLinksConfiguration(parameters);
 		final VelocityContext velocityContext = new VelocityContext(MacroUtils.defaultVelocityContext());
+		List<Build> builds;
+		String errorMessage;
+		try {
+		    builds = getBuilds(config);
+		    errorMessage = "";
+		} catch (Exception e){
+			builds = new ArrayList<Build>();
+			errorMessage = e.getMessage();
+		}
+		velocityContext.put("builds", builds);
+		velocityContext.put("error", errorMessage);
+		return VelocityUtils.getRenderedTemplate("artifact-links.vm", velocityContext);
+	}
+
+	/**
+	 * @param config
+	 * @return
+	 */
+	private List<Build> getBuilds(final ArtifactLinksConfiguration config) {
 		final List<Build> builds;
 		if (isValid(config)){
 			builds = bambooService.getArtifacts(config.getUrl());
 		} else {
 			builds = new ArrayList<Build>();
 		}
-		velocityContext.put("builds", builds);
-		return VelocityUtils.getRenderedTemplate("artifact-links.vm", velocityContext);
+		return builds;
 	}
 
+	/**
+	 * @param config
+	 * @return
+	 */
 	private boolean isValid(ArtifactLinksConfiguration config) {
 		if (config.isValid()){
 			try {

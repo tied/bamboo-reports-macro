@@ -19,3 +19,6 @@ The macro takes the following configuration values:
 + __Plan Key__ the key of the Bamboo plan
 + __Count__ the number of plan results to display 
 
+with the option to override the generated URL
+
+![Screenshot of configuration](docs/images/ArtifactLinksMacroBrowser.png)

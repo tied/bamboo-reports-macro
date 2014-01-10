@@ -15,3 +15,6 @@
     </tr>
 #end
 </table>
+#if( $error != "")
+<p class="artifact-links-error" >Error fetching artifacts: $error</p>
+#end

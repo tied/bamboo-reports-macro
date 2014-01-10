@@ -17,3 +17,8 @@ div.artifact-links-build-status {
 div.artifact-links-build-status.Successful {
 	background-image: url("images/success.png");
 }
+
+p.artifact-links-error {
+	color: red;
+	font-weight: bold;
+}

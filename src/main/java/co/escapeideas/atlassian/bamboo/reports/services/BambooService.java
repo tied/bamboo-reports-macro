@@ -1,4 +1,4 @@
-package co.escapeideas.atlassian.bamboo.reports;
+package co.escapeideas.atlassian.bamboo.reports.services;
 
 import java.util.List;
 

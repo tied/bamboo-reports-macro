@@ -1,15 +1,22 @@
-package co.escapeideas.atlassian.bamboo.reports;
+package co.escapeideas.atlassian.bamboo.reports.parsers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import co.escapeideas.atlassian.bamboo.reports.services.Build;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class GsonParser implements JSONParser {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(GsonParser.class);
 	
 	private final JsonParser parser = new JsonParser();
 
@@ -27,6 +34,7 @@ public class GsonParser implements JSONParser {
 		final ArrayList<Build> list = new ArrayList<Build>();
 		final JsonElement results = response.getAsJsonObject().get("results");
 		final JsonElement resultArray = results.getAsJsonObject().get("result");
+		LOGGER.debug("List of results", resultArray);
 		for (JsonElement result : resultArray.getAsJsonArray()) {
 			final Build build = toBuild(result);
 			list.add(build);
@@ -59,6 +67,7 @@ public class GsonParser implements JSONParser {
 		final JsonElement stages = resultObject.get("stages");
 		final JsonElement artifactArray = artifacts.getAsJsonObject().get("artifact");
 		artifactMap.putAll(toMap(artifactArray));
+		LOGGER.debug("Stages found in result", stages);
 		if (stages != null){
 			final JsonElement stageArray = stages.getAsJsonObject().get("stage");
 			artifactMap.putAll(getArtifactsFromStages(stageArray));
@@ -74,9 +83,11 @@ public class GsonParser implements JSONParser {
 	private Map<String, String> getArtifactsFromStages(final JsonElement stageArray) {
 		final Map<String, String> artifactMap = new HashMap<String, String>();
 		if (stageArray != null){
+			LOGGER.debug("List of stages", stageArray);
 			for (JsonElement stage : stageArray.getAsJsonArray()){
 				final JsonObject object = stage.getAsJsonObject();
 				final List<Build> builds = toList(object);
+				LOGGER.debug("List of child artifacts", builds);
 				for (Build build : builds){
 					artifactMap.putAll(build.getArtifactMap());
 				}
@@ -92,6 +103,7 @@ public class GsonParser implements JSONParser {
 	 */
 	private Map<String, String> toMap(final JsonElement artifactArray) {
 		final Map<String, String> artifactMap = new HashMap<String, String>();
+		LOGGER.debug("List of artifacts", artifactArray);
 		if (artifactArray != null){
 			for (JsonElement artifact : artifactArray.getAsJsonArray()){
 				final JsonObject object = artifact.getAsJsonObject();

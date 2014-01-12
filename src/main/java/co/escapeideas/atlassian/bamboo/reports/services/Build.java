@@ -1,7 +1,7 @@
 /**
  * 
  */
-package co.escapeideas.atlassian.bamboo.reports;
+package co.escapeideas.atlassian.bamboo.reports.services;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,6 +40,12 @@ public class Build {
 
 	public Set<Entry<String,String>> getArtifacts() {
 		return artifactMap.entrySet();
+	}
+
+	@Override
+	public String toString() {
+		return "Build [artifactMap=" + artifactMap + ", status=" + status
+				+ ", id=" + id + "]";
 	}
 	
 }

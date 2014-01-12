@@ -1,7 +1,7 @@
 /**
  * 
  */
-package co.escapeideas.atlassian.bamboo.reports;
+package co.escapeideas.atlassian.bamboo.reports.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,12 +12,18 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.wink.client.ClientResponse;
 import org.apache.wink.client.Resource;
 import org.apache.wink.client.RestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import co.escapeideas.atlassian.bamboo.reports.parsers.JSONParser;
 
 /**
  * @author tmullender
  *
  */
 public class HTTPBambooService implements BambooService {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(HTTPBambooService.class);
 	
 	private final RestClient httpClient;
 	private final JSONParser parser;
@@ -38,6 +44,7 @@ public class HTTPBambooService implements BambooService {
 		final Resource resource = httpClient.resource(url);
 		final ClientResponse response = resource.get();
 		final List<Build> builds;
+		LOGGER.info("response from GET", response);
 		if (isSuccessful(response)){
 			builds = parser.parseBuilds(response.getEntity(String.class));
 		} else {
